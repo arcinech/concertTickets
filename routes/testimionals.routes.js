@@ -21,15 +21,16 @@ router.route('/testimonials')
   });
 
 router.route('/testimonials/:id')
-  .get((req, res) => res.json(array.find(item => item.id === JSON.parse(req.params.id))))
+  .get((req, res) => res.json(data.find(item => item.id.toString() === req.params.id)))
   .put((req,res) => {
     const {author, text} = req.body;
     if (author && text ) {
-      data = data.find(item => {
-        if(item.id === JSON.parse(req.params.id)){
+      data = data.map(item => {
+        if(item.id.toString() === req.params.id){
           item.author = author;
           item.text = text;
         }
+        return item;
       });
       res.json({ message: 'OK' });
    } else {
@@ -37,7 +38,7 @@ router.route('/testimonials/:id')
    }
   })
   .delete((req,res) => {
-      data = data.filter(item => item.id !== JSON.parse(req.params.id));
+      data = data.filter(item => item.id.toString() !== req.params.id);
       res.json({ message: 'OK' });
   });
 

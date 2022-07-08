@@ -20,12 +20,12 @@ router.route('/seats')
   });
 
 router.route('/seats/:id')
-  .get((req, res) => res.json(data.find(item =>  item.id === JSON.parse(req.params.id))))
+  .get((req, res) => res.json(data.find(item =>  item.id.toString() === req.params.id)))
   .put((req,res) => {
     const { day, seat, client, email } = req.body;
     if( day && seat && client && email){
       data = data.map(item => {
-        if(item.id === JSON.parse(req.params.id)) {
+        if(item.id.toString() === req.params.id) {
           item.day = day;
           item.seat = seat;
           item.client = client;
@@ -37,7 +37,7 @@ router.route('/seats/:id')
     } else res.json({message: 'Error'});
   })
   .delete((req,res) => {
-    data = data.filter(item => item.id !== JSON.parse(req.params.id));
+    data = data.filter(item => item.id.toString() !== req.params.id);
     res.json({ message: 'OK' });
   });
 
