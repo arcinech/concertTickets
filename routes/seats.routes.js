@@ -6,26 +6,21 @@ const {v4: uuidv4} = require('uuid');
 let data = db.seats;
 
 router.route('')
-  .get((req, res)=> {
-    res.json(data);
-  })
+  .get((req, res) => res.json(data))
   .post((req, res) => {
     req.body.id = uuidv4();
     const {day, seat, client, email} = req.body;
     if (day && seat && client && email) {
       console.log(req.body)
       data.push(req.body)
-      res.json(req.body);
+      res.json({ message: 'OK' });
     } else {
-      res.send('error');
+      res.json({message: 'Error'});
     }
   });
 
 router.route('/:id')
-  .get((req, res) => {
-    
-    res.json(data.find(item =>  item.id === JSON.parse(req.params.id)));
-  })
+  .get((req, res) => res.json(data.find(item =>  item.id === JSON.parse(req.params.id))))
   .put((req,res) => {
     const { day, seat, client, email } = req.body;
     if( day && seat && client && email){
@@ -38,12 +33,12 @@ router.route('/:id')
         }
         return item;   
       });
-      res.send(data);
-    } else res.send('error');
+      res.json({ message: 'OK' });
+    } else res.json({message: 'Error'});
   })
   .delete((req,res) => {
     data = data.filter(item => item.id !== JSON.parse(req.params.id));
-    res.json(data);
+    res.json({ message: 'OK' });
   });
 
 module.exports = router;

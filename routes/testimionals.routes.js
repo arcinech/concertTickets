@@ -7,18 +7,16 @@ const { text } = require('express');
 let data = db.testimonials;
 
 router.route('/testimonials')
-  .get((req, res)=> {
-    res.json(data);
-  })
+  .get((req, res) => res.json(data))
   .post((req, res) => {
     req.body.id = uuidv4();
     const {author, text} = req.body;;
     if (author && text ) {
       console.log(req.body)
       data.push(req.body)
-      res.json(req.body);
+      res.json({ message: 'OK' });
     } else {
-      res.send('error');
+      res.send({message: 'Error'});
     }
   });
 
@@ -33,10 +31,14 @@ router.route('/testimonials/:id')
           item.text = text;
         }
       });
+      res.json({ message: 'OK' });
+   } else {
+    res.json({message: 'Error'});
    }
   })
   .delete((req,res) => {
       data = data.filter(item => item.id !== JSON.parse(req.params.id));
+      res.json({ message: 'OK' });
   });
 
 router.route('/testimonials/random')
