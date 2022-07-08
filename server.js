@@ -1,52 +1,20 @@
 const express = require('express');
-const {v4: uuidv4} = require('uuid');
-const db = require('./db.js');
-const cors = require('cors');
 const seatsRouts = require('./routes/seats.routes');
+const testimionalsRouts = require('./routes/testimionals.routes');
+const concertsRoutes = require('./routes/concerts.routes');
 
 const app = express();
 
-app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use('/api', seatsRouts);
+app.use('/api', testimionalsRouts);
+app.use('/api', concertsRoutes);
 
-
-app.get('/testimonials' , (req, res) => {
-  console.log(req);
-  res.json(db);
+app.use((req, res) => {
+  res.status(404).json({message: 'Not found...' });
 });
-
-app.get('/testimonials/random' , (req, res) => {
-    const random = Math.floor(Math.random()* db.length);
-    res.json(db.testimonials[random]);
-});
-
-app.get('/testimonials/:id' , (req, res) => {
-  res.json(db.testimonials.find(item => JSON.stringify(item.id) === req.params.id));
-});
-
-
-app.post('/testimonials' ,(req, res) => {
-  req.body.id = uuidv4();
-  const {author, text} = req.body;;
-  if (author && text ) {
-    console.log(req.body)
-    res.json(req.body);
-  } else {
-    res.send('error');
-  }
-});
-
-app.put('/testimonials/:id' , (req, res) => {
-  res.send({message: 'OK'});
-});
-
-app.delete('/testimonials/:id' , (req, res) => {
-  res.send({message: 'OK'});
-});
-
 
 app.listen(8000, function () {
-  console.log('CORS-enabled web server listening on port 80')
-})
+  console.log('Web server started at port 8000');
+});
