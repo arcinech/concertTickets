@@ -5,7 +5,7 @@ const {v4: uuidv4} = require('uuid');
 
 let data = db.seats;
 
-router.route('')
+router.route('/seats')
   .get((req, res) => res.json(data))
   .post((req, res) => {
     req.body.id = uuidv4();
@@ -19,7 +19,7 @@ router.route('')
     }
   });
 
-router.route('/:id')
+router.route('/seats/:id')
   .get((req, res) => res.json(data.find(item =>  item.id === JSON.parse(req.params.id))))
   .put((req,res) => {
     const { day, seat, client, email } = req.body;
