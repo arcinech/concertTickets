@@ -37,4 +37,4 @@ router.route('/concerts/:id')
     } else res.send('This Id does not exist!');
   });
 
-module.exports = testimonials;
+module.exports = router;

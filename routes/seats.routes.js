@@ -4,18 +4,18 @@ const db = require('./../db');
 const {v4: uuidv4} = require('uuid');
 const { text } = require('express');
 
-const array = db.seats;
+const data = db.seats;
 
 router.route('/seats')
   .get((req, res)=> {
-    res.json(array);
+    res.json(data);
   })
   .post((req, res) => {
     req.body.id = uuidv4();
-    const {author, text} = req.body;;
-    if (author && text ) {
+    const {day, seat, client, email} = req.body;
+    if (day && seat && client && email) {
       console.log(req.body)
-      db.push(req.body)
+      data.push(req.body)
       res.json(req.body);
     } else {
       res.send('error');
@@ -23,11 +23,16 @@ router.route('/seats')
   });
 
 router.route('/seats/:id')
-  .get((req, res) => res.json(array.find(item => JSON.stringify(item.id) === req.params.id)))
+  .get((req, res) => {
+    
+    res.json(data.find(item => {
+      const {id} = req.params.id;
+      console.log(item.id === id);
+      return item.id === JSON.parse(req.params.id)}))})
   .put((req,res) => {
-    const {day, seat, client, email} = req.body;
-    array.map(item => {
-      if(item.id === req.params.id) {
+    const {id, day, seat, client, email} = req.body;
+    data.map(item => {
+      if(item.id === id) {
         item.day = day;
         item.seat = seat;
         item.client = client;
@@ -35,13 +40,11 @@ router.route('/seats/:id')
       }
       return item;
     });
-    res.send(array);
+    res.send(data);
   })
   .delete((req,res) => {
-    if(array.find(item => JSON.stringify(item.id) === req.params.id)){
-      array.filter(item => item.id !== req.params.id);
-      res.send(array);
-    } else res.send('This Id does not exist!');
+    db.seats.filter(item => item.id !== req.params.id);
+    res.send('ok');
   });
 
 module.exports = router;
