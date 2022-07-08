@@ -4,18 +4,18 @@ const db = require('./../db');
 const {v4: uuidv4} = require('uuid');
 const { text } = require('express');
 
-const array = db.testimonials;
+let data = db.testimonials;
 
 router.route('/testimonials')
   .get((req, res)=> {
-    res.json(array);
+    res.json(data);
   })
   .post((req, res) => {
     req.body.id = uuidv4();
     const {author, text} = req.body;;
     if (author && text ) {
       console.log(req.body)
-      db.push(req.body)
+      data.push(req.body)
       res.json(req.body);
     } else {
       res.send('error');
@@ -23,27 +23,26 @@ router.route('/testimonials')
   });
 
 router.route('/testimonials/:id')
-  .get((req, res) => res.json(array.find(item => JSON.stringify(item.id) === req.params.id)))
+  .get((req, res) => res.json(array.find(item => item.id === JSON.parse(req.params.id))))
   .put((req,res) => {
-    const change = array.find(item => JSON.stringify(item.id) === req.params.id);
     const {author, text} = req.body;
-    if(change) {
-      change.author = author;
-      change.text = text;
-    } else {
-      db.push({id: uuidv4(), text: text, author: author});
-    };
+    if (author && text ) {
+      data = data.find(item => {
+        if(item.id === JSON.parse(req.params.id)){
+          item.author = author;
+          item.text = text;
+        }
+      });
+   }
   })
   .delete((req,res) => {
-    if(array.find(item => JSON.stringify(item.id) === req.params.id)){
-      array.filter(item => JSON.stringify(item.id) !== req.params.id);
-    } else res.send('This Id does not exist!');
+      data = data.filter(item => item.id !== JSON.parse(req.params.id));
   });
 
 router.route('/testimonials/random')
   .get((req, res) => {
     const random = Math.floor(Math.random()* db.length);
-    res.json(array[random]);
+    res.json(data[random]);
   });
 
 module.exports = router;

@@ -2,11 +2,10 @@ const express = require('express');
 const router = express.Router();
 const db = require('./../db');
 const {v4: uuidv4} = require('uuid');
-const { text } = require('express');
 
-const data = db.seats;
+let data = db.seats;
 
-router.route('/seats')
+router.route('')
   .get((req, res)=> {
     res.json(data);
   })
@@ -22,29 +21,29 @@ router.route('/seats')
     }
   });
 
-router.route('/seats/:id')
+router.route('/:id')
   .get((req, res) => {
     
-    res.json(data.find(item => {
-      const {id} = req.params.id;
-      console.log(item.id === id);
-      return item.id === JSON.parse(req.params.id)}))})
+    res.json(data.find(item =>  item.id === JSON.parse(req.params.id)));
+  })
   .put((req,res) => {
-    const {id, day, seat, client, email} = req.body;
-    data.map(item => {
-      if(item.id === id) {
-        item.day = day;
-        item.seat = seat;
-        item.client = client;
-        item.email = email;
-      }
-      return item;
-    });
-    res.send(data);
+    const { day, seat, client, email } = req.body;
+    if( day && seat && client && email){
+      data = data.map(item => {
+        if(item.id === JSON.parse(req.params.id)) {
+          item.day = day;
+          item.seat = seat;
+          item.client = client;
+          item.email = email;
+        }
+        return item;   
+      });
+      res.send(data);
+    } else res.send('error');
   })
   .delete((req,res) => {
-    db.seats.filter(item => item.id !== req.params.id);
-    res.send('ok');
+    data = data.filter(item => item.id !== JSON.parse(req.params.id));
+    res.json(data);
   });
 
 module.exports = router;
