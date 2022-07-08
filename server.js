@@ -1,11 +1,16 @@
 const express = require('express');
 const {v4: uuidv4} = require('uuid');
 const db = require('./db.js');
+const cors = require('cors');
+const seatsRouts = require('./routes/seats.routes');
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use('/api', seatsRouts);
+
 
 app.get('/testimonials' , (req, res) => {
   console.log(req);

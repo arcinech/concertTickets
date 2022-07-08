@@ -4,9 +4,9 @@ const db = require('./../db');
 const {v4: uuidv4} = require('uuid');
 const { text } = require('express');
 
-const array = db.testimonials;
+const array = db.concerts;
 
-router.route('/testimonials')
+router.route('/concerts')
   .get((req, res)=> {
     res.json(array);
   })
@@ -22,17 +22,14 @@ router.route('/testimonials')
     }
   });
 
-router.route('/testimonials/:id')
+router.route('/concerts/:id')
   .get((req, res) => res.json(array.find(item => JSON.stringify(item.id) === req.params.id)))
   .put((req,res) => {
     const change = array.find(item => JSON.stringify(item.id) === req.params.id);
     const {author, text} = req.body;
-    if(change) {
-      change.author = author;
-      change.text = text;
-    } else {
-      db.push({id: uuidv4(), text: text, author: author});
-    };
+    change.author = author;
+    change.text = text;
+    
   })
   .delete((req,res) => {
     if(array.find(item => JSON.stringify(item.id) === req.params.id)){
@@ -40,10 +37,4 @@ router.route('/testimonials/:id')
     } else res.send('This Id does not exist!');
   });
 
-router.route('/testimonials/random')
-  .get((req, res) => {
-    const random = Math.floor(Math.random()* db.length);
-    res.json(array[random]);
-  });
-
-module.exports = router;
+module.exports = testimonials;

@@ -4,9 +4,9 @@ const db = require('./../db');
 const {v4: uuidv4} = require('uuid');
 const { text } = require('express');
 
-const array = db.testimonials;
+const array = db.seats;
 
-router.route('/testimonials')
+router.route('/seats')
   .get((req, res)=> {
     res.json(array);
   })
@@ -22,28 +22,26 @@ router.route('/testimonials')
     }
   });
 
-router.route('/testimonials/:id')
+router.route('/seats/:id')
   .get((req, res) => res.json(array.find(item => JSON.stringify(item.id) === req.params.id)))
   .put((req,res) => {
-    const change = array.find(item => JSON.stringify(item.id) === req.params.id);
-    const {author, text} = req.body;
-    if(change) {
-      change.author = author;
-      change.text = text;
-    } else {
-      db.push({id: uuidv4(), text: text, author: author});
-    };
+    const {day, seat, client, email} = req.body;
+    array.map(item => {
+      if(item.id === req.params.id) {
+        item.day = day;
+        item.seat = seat;
+        item.client = client;
+        item.email = email;
+      }
+      return item;
+    });
+    res.send(array);
   })
   .delete((req,res) => {
     if(array.find(item => JSON.stringify(item.id) === req.params.id)){
-      array.filter(item => JSON.stringify(item.id) !== req.params.id);
+      array.filter(item => item.id !== req.params.id);
+      res.send(array);
     } else res.send('This Id does not exist!');
-  });
-
-router.route('/testimonials/random')
-  .get((req, res) => {
-    const random = Math.floor(Math.random()* db.length);
-    res.json(array[random]);
   });
 
 module.exports = router;
