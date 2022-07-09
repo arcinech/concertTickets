@@ -10,13 +10,14 @@ router.route('/seats')
   .post((req, res) => {
     req.body.id = uuidv4();
     const {day, seat, client, email} = req.body;
-    if (day && seat && client && email) {
-      console.log(req.body)
-      data.push(req.body)
-      res.json({ message: 'OK' });
-    } else {
-      res.json({message: 'Error'});
-    }
+    const exist = data.some(item => item.day.toString() === day && item.seat.toString() === seat);
+    console.log(exist);
+    if (day && seat && client && email && !exist) {
+        data.push(req.body)
+        res.json({ message: 'OK' });
+    } if(exist){
+      res.status(409).json({message: 'The slot is already taken...'});
+    } else res.status(400).json({message: 'Error'});
   });
 
 router.route('/seats/:id')
@@ -34,7 +35,7 @@ router.route('/seats/:id')
         return item;   
       });
       res.json({ message: 'OK' });
-    } else res.json({message: 'Error'});
+    } else res.status(400).json({message: 'Error'});
   })
   .delete((req,res) => {
     data = data.filter(item => item.id.toString() !== req.params.id);
