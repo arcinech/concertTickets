@@ -1,5 +1,6 @@
-import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
+import { createStore, combineReducers, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
+import { composeWithDevTools } from 'redux-devtools-extension/developmentOnly';
 
 // import reducers
 import concerts from './concertsRedux';
@@ -13,10 +14,7 @@ const rootReducer = combineReducers({
 
 const store = createStore(
   rootReducer,
-  compose(
-		applyMiddleware(thunk),
-		window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
-	)
+  composeWithDevTools(applyMiddleware(thunk))
 );
 
 export default store;
