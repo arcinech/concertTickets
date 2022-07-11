@@ -20,6 +20,12 @@ router.route('/testimonials')
     }
   });
 
+router.route('/testimonials/random')
+  .get((req, res) => {
+    const random = Math.floor(Math.random()* db.length);
+    res.json(data[random]);
+  });
+
 router.route('/testimonials/:id')
   .get((req, res) => res.json(data.find(item => item.id.toString() === req.params.id)))
   .put((req,res) => {
@@ -40,12 +46,6 @@ router.route('/testimonials/:id')
   .delete((req,res) => {
       data = data.filter(item => item.id.toString() !== req.params.id);
       res.json({ message: 'OK' });
-  });
-
-router.route('/testimonials/random')
-  .get((req, res) => {
-    const random = Math.floor(Math.random()* db.length);
-    res.json(data[random]);
   });
 
 module.exports = router;
