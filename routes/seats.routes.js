@@ -11,11 +11,11 @@ router.route('/seats')
     req.body.id = uuidv4();
     const {day, seat, client, email} = req.body;
     const exist = data.some(item => item.day.toString() === day && item.seat.toString() === seat);
-    console.log(exist);
     if (day && seat && client && email && !exist) {
-        data.push(req.body)
+        data.push(req.body);
+        req.io.emit('seatsUpdated', data);
         res.json({ message: 'OK' });
-    } if(exist){
+    } else if(exist){
       res.status(409).json({message: 'The slot is already taken...'});
     } else res.status(400).json({message: 'Error'});
   });
