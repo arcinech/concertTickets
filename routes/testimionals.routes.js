@@ -8,7 +8,7 @@ router.post('/testimonials', TestimonialsController.postTestimonial);
 router.get('/testimonials/random', TestimonialsController.getRandom);
 
 router.get('/testimonials/:id', TestimonialsController.getById)
-router.put('/testimonials/:id', TestimonialController.putById)
-router.delete('/testimonials/:id', TestimonialController.deleteById);
+router.put('/testimonials/:id', TestimonialsController.putById)
+router.delete('/testimonials/:id', TestimonialsController.deleteById);
 
 module.exports = router;

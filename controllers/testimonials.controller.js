@@ -1,4 +1,4 @@
-const Testimonial = require('../models/testimionals.model');
+const Testimonial = require('../models/testimonial.model');
 
 exports.getAll = async (req, res) => { 
   try { 
