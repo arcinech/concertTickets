@@ -3,13 +3,14 @@ const cors = require('cors');
 const path = require('path');
 const mongoose = require('mongoose');
 
-const Seat = require('./models/seat.model');
 const seatsRouts = require('./routes/seats.routes');
 const testimionalsRouts = require('./routes/testimionals.routes');
 const concertsRoutes = require('./routes/concerts.routes');
-const socket = require('socket.io');
 
-// const db = require('./db');
+const socket = require('socket.io');
+const Seat = require('./models/seat.model');
+require('dotenv').config();
+
 
 const app = express();
 // Port for listening of the server 
@@ -43,7 +44,8 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '/client/build/index.html'));
 });
 
-mongoose.connect('mongodb://localhost:27017/NewWaveDB', { useNewUrlParser: true, useUnifiedTopology: true });
+//Use .env file variables if exist else use default
+mongoose.connect(process.env.MONGODB_URI ?? 'mongodb://localhost:27017/NewWaveDB', { useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;
 
 db.once('open', () => {
