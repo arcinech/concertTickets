@@ -3,9 +3,7 @@ const Seat = require('../models/seat.model');
 exports.getAllSeats = async (req, res) => {
   try { 
     res.send(await Seat.find());
-  }
-
-  catch (err) {
+  } catch (err) {
     res.status(500).send(err);
   }
 };
@@ -24,9 +22,7 @@ exports.postSeat = async (req, res) => {
     } else if(exist){
       res.status(409).json({message: 'The slot is already taken...'});
     } else res.status(400).json({message: 'Error'});
-  }
-
-  catch (err) {
+  } catch (err) {
     res.status(500).send(err);
   }
 };
@@ -37,9 +33,7 @@ exports.getById = async (req, res) => {
 
     if(seat) res.send(seat);
     else res.status(404).json({message: 'Not found'});
-  }
-
-  catch (err) {
+  } catch (err) {
     res.status(500).send(err);
   }
 }
@@ -49,6 +43,7 @@ exports.putById = async (req, res) => {
 
   try {
     const exist = await Seat.findOne({day, seat});
+    
     if(exist) {
       exist.day = day;
       exist.seat = seat;
@@ -58,9 +53,7 @@ exports.putById = async (req, res) => {
       req.io.emit('seatsUpdated', await Seat.find({}));
       res.json({ message: 'OK' });
     } else res.status(404).json({ message: 'Not found...' });
-  }
-
-  catch (err) {
+  } catch (err) {
     res.status(500).send(err);
   }
 }
@@ -74,9 +67,7 @@ exports.deleteById = async (req, res) => {
       req.io.emit('seatsUpdated', await Seat.find({}));
       res.json({ message: 'OK' });
     } else res.status(404).json({ message: 'Not found...' });
-  }
-
-  catch (err) {
+  } catch (err) {
     res.status(500).send(err);
   }
 }

@@ -23,9 +23,7 @@ exports.postConcert = async (req, res) => {
     } else if(exist){
       res.status(409).json({message: 'This concert already exists on this day...'});
     } else res.status(400).json({message: 'Error'});
-  }
-
-  catch (err) {
+  } catch (err) {
     res.status(500).send(err);
   }
 };
@@ -36,9 +34,7 @@ exports.getById = async (req, res) => {
 
     if(concert) res.send(concert);
     else res.status(404).json({message: 'Not found'});
-  }
-
-  catch (err) {
+  } catch (err) {
     res.status(500).send(err);
   }
 };
@@ -58,9 +54,7 @@ exports.putById = async (req, res) => {
       await exist.save();
       res.json({ message: 'OK' });
     } else res.status(404).json({ message: 'Not found...' });
-  }
-
-  catch (err) {
+  } catch (err) {
     res.status(500).send(err);
   }
 };
@@ -73,9 +67,7 @@ exports.deleteById = async (req, res) => {
       await concert.remove();
       res.json({ message: 'OK' });
     } else res.status(404).json({ message: 'Not found...' });
-  }
-
-  catch (err) {
+  } catch (err) {
     res.status(500).send(err);
   }
 };

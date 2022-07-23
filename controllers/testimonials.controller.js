@@ -3,9 +3,7 @@ const Testimonial = require('../models/testimonial.model');
 exports.getAll = async (req, res) => { 
   try { 
     res.send(await Testimonial.find());
-  }
-  
-  catch (err) {
+  } catch (err) {
     res.status(500).send(err);
   }
 };
@@ -21,9 +19,7 @@ exports.postTestimonial = async (req, res) => {
     } else if(exist){
       res.status(409).json({message: 'This testimonial already exists...'});
     } else res.status(400).json({message: 'Error'});
-  }
-
-  catch (err) {
+  } catch (err) {
     res.status(500).send(err);
   }
 };
@@ -36,9 +32,7 @@ exports.getRandom = async (req, res) => {
     
     if(!testimonial) res.status(404).json({ message: 'Not found' });
     else res.json(testimonial);
-  }
-
-  catch(err) {
+  } catch(err) {
     res.status(500).send(err);
   }
 };
@@ -48,9 +42,7 @@ exports.getById = async (req, res) => {
     const testimonial = await Testimonial.findById(req.params.id);
     if(testimonial) res.send(testimonial);
     else res.status(404).json({message: 'Not found'});
-  }
-
-  catch (err) {
+  } catch (err) {
     res.status(500).send(err);
   }
 };
@@ -65,9 +57,7 @@ exports.putById = async (req, res) => {
       await exist.save();
       res.json({ message: 'OK' });
     } else res.status(404).json({ message: 'Not found...' });
-  }
-
-  catch (err) {
+  } catch (err) {
     res.status(500).send(err);
   }
 };
@@ -79,9 +69,7 @@ exports.deleteById = async (req, res) => {
       await testimonial.remove();
       res.json({ message: 'OK' });
     } else res.status(404).json({ message: 'Not found...' });
-  }
-
-  catch (err) {
+  } catch (err) {
     res.status(500).send(err);
   }
 };
