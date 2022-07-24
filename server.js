@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -9,7 +10,6 @@ const concertsRoutes = require('./routes/concerts.routes');
 
 const socket = require('socket.io');
 const Seat = require('./models/seat.model');
-require('dotenv').config();
 
 
 const app = express();
