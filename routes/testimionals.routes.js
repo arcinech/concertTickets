@@ -1,51 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const db = require('./../db');
-const {v4: uuidv4} = require('uuid');
-const { text } = require('express');
+const TestimonialsController = require('../controllers/testimonials.controller');
 
-let data = db.testimonials;
+router.get('/testimonials', TestimonialsController.getAll)
+router.post('/testimonials', TestimonialsController.postTestimonial);
 
-router.route('/testimonials')
-  .get((req, res) => res.json(data))
-  .post((req, res) => {
-    req.body.id = uuidv4();
-    const {author, text} = req.body;;
-    if (author && text ) {
-      console.log(req.body)
-      data.push(req.body)
-      res.json({ message: 'OK' });
-    } else {
-      res.send({message: 'Error'});
-    }
-  });
+router.get('/testimonials/random', TestimonialsController.getRandom);
 
-router.route('/testimonials/random')
-  .get((req, res) => {
-    const random = Math.floor(Math.random()* db.length);
-    res.json(data[random]);
-  });
-
-router.route('/testimonials/:id')
-  .get((req, res) => res.json(data.find(item => item.id.toString() === req.params.id)))
-  .put((req,res) => {
-    const {author, text} = req.body;
-    if (author && text ) {
-      data = data.map(item => {
-        if(item.id.toString() === req.params.id){
-          item.author = author;
-          item.text = text;
-        }
-        return item;
-      });
-      res.json({ message: 'OK' });
-   } else {
-    res.json({message: 'Error'});
-   }
-  })
-  .delete((req,res) => {
-      data = data.filter(item => item.id.toString() !== req.params.id);
-      res.json({ message: 'OK' });
-  });
+router.get('/testimonials/:id', TestimonialsController.getById)
+router.put('/testimonials/:id', TestimonialsController.putById)
+router.delete('/testimonials/:id', TestimonialsController.deleteById);
 
 module.exports = router;
