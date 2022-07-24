@@ -1,7 +1,11 @@
 Created backend for concert Tickets frontend.
 
-For online demo please visit:
+[IMPORTANT]
+Repository without database.
+App use mongodb database for persisting data.
+Specify db with password in .env file with MONGODB_URI variable.
 
+For online demo please visit:
 https://radiant-sands-96165.herokuapp.com/
 
 All endpoint for backend server start with /api
