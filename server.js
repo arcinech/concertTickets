@@ -13,6 +13,11 @@ const Seat = require('./models/seat.model');
 
 
 const app = express();
+
+if(NODE_ENV === 'production') dbUri = 'process.env.MONGODB_URI';
+else if(NODE_ENV === 'test') dbUri = 'mongodb://localhost:27017/companyDBtest';
+else dbUri = 'mongodb://localhost:27017/companyDB';
+
 // Port for listening of the server 
 const serv =  app.listen(process.env.PORT || 8000);
 
@@ -45,7 +50,7 @@ app.get('*', (req, res) => {
 });
 
 //Use .env file variables if exist else use default
-mongoose.connect(process.env.MONGODB_URI ?? 'mongodb://localhost:27017/NewWaveDB', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(dbUri, { useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;
 
 db.once('open', () => {
@@ -71,3 +76,5 @@ io.on('connection', async (socket) => {
 app.use((req, res) => {
   res.status(404).json({message: 'Not found...' });
 });
+
+module.exports = serv;
