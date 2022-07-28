@@ -6,7 +6,7 @@ router.get('/concerts', ConcertsController.getAll);
 router.post('/concerts', ConcertsController.postConcert);
 
 //Routes for more advence search of concerts
-router.get('/concerts/perfomer/:perfomer', ConcertsController.getByPerfomer);
+router.get('/concerts/performer/:performer', ConcertsController.getByPerformer);
 router.get('/concerts/genre/:genre', ConcertsController.getByGenre);
 router.get('/concerts/price/:price_min/:price_max', ConcertsController.getByPrice);
 router.get('/concerts/day/:day', ConcertsController.getByDay);

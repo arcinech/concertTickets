@@ -1,11 +1,15 @@
 const Concert = require('../models/concert.model');
+const Seat = require('../models/seat.model');
 
 exports.getAll = async (req, res) => { 
   try { 
-    res.send(await Concert.find());
-  }
-  
-  catch (err) {
+    const concerts = await Concert.find();
+    const seats = await Seat.find();
+    res.send(concerts.map(concert => {
+      concert.freeSeats = 50 - seats.filter(seat => seat.concert === concert._id.toString()).length;
+    })
+    );
+  } catch (err) {
     res.status(500).send(err);
   }
 };
@@ -31,9 +35,12 @@ exports.postConcert = async (req, res) => {
 exports.getById = async (req, res) => { 
   try {
     const concert = await Concert.findById(req.params.id);
-
-    if(concert) res.send(concert);
-    else res.status(404).json({message: 'Not found'});
+    const seats = await Seat.find({concert: req.params.id});
+    if(concert) {
+      const freeSeats = 50 - seats.length;
+      concert._doc.freeSeats = freeSeats;
+      res.send(concert);
+    } else res.status(404).json({message: 'Not found'});
   } catch (err) {
     res.status(500).send(err);
   }
@@ -72,7 +79,7 @@ exports.deleteById = async (req, res) => {
   }
 };
 
-exports.findPerformer = async (req, res) => {
+exports.getByPerformer = async (req, res) => {
   try {
     const concerts = await Concert.find({performer: req.params.performer});
 
@@ -86,7 +93,7 @@ exports.findPerformer = async (req, res) => {
   }
 };
 
-exports.findByGenre = async (req, res) => {
+exports.getByGenre = async (req, res) => {
   try {
     const concerts = await Concert.find({genre: req.params.genre});
 
