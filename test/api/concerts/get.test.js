@@ -1,7 +1,8 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const server = require ('../../../server');
-const Concerts = require('../../../models/concert.model');
+const Concert = require('../../../models/concert.model');
+const Seat = require('../../../models/seat.model');
 
 chai.use(chaiHttp);
 
@@ -12,15 +13,22 @@ const request = chai.request;
 describe('GET /concerts', () => {
 
   beforeEach(async () => {
-    const testConOne = new Concerts({performer: 'John Doe', genre: 'Rock', price: '100', day: '1', image: 'img/uploads/1fsd324fsdg.jpg'});
+    const testSeatsOne = new Seat({_id: '62e260ecf22805eafedf72ba', day: 1, seat: 1, client: 'test', email: 'test@test.test', concert: '5d9f1140f10a81216cfd4408'});
+    await testSeatsOne.save();
+
+    const testSeatTwo = new Seat({_id: '62e267f87e2b0bc1072ee9ba', day: 1, seat: 3, client: 'test', email: 'test@test.test', concert: '5d9f1140f10a81216cfd4408'});
+    await testSeatTwo.save();
+
+    const testConOne = new Concert({_id: '5d9f1140f10a81216cfd4408', performer: 'John Doe', genre: 'Rock', price: '50', day: '1', image: 'img/uploads/1fsd324fsdg.jpg'});
     await testConOne.save();
 
-    const testConTwo = new Concerts({performer: 'Johny Doe', genre: 'Jazz', price: '50', day: '3', image: 'img/uploads/1fsd324fsdg.jpg'});
+    const testConTwo = new Concert({_id: '5d9f1159f81ce8d1ef2bee48', performer: 'Johny Doe', genre: 'Jazz', price: '25', day: '3', image: 'img/uploads/1fsd324fsdg.jpg'});
     await testConTwo.save();
   });
 
   afterEach(async () => {
-    await Concerts.deleteMany();
+    await Concert.deleteMany();
+    await Seat.deleteMany();
   });
 
   it('/ should return all concerts', async () => {
@@ -28,10 +36,12 @@ describe('GET /concerts', () => {
     expect(res.status).to.equal(200);
     expect(res.body).to.be.an('array');
     expect(res.body.length).to.equal(2);
+    console.log(res.body);
+    expect(res.body[0].freeSeats).to.equal(48);
   });
 
-  it('/perforemer/perforemr:id should return concerts by performer', async () => {
-    const res = await request(server).get('/api/concerts/perfomer/John Doe');
+  it('/performer/performer:id should return concerts by performer', async () => {
+    const res = await request(server).get('/api/concerts/performer/John Doe');
     expect(res.status).to.equal(200);
     expect(res.body).to.be.an('array');
     expect(res.body.length).to.equal(1);
@@ -44,8 +54,8 @@ describe('GET /concerts', () => {
     expect(res.body.length).to.equal(1);
   });
 
-  it('/price/price_min/price_max should return concerts by price', async () => {
-    const res = await request(server).get('/api/concerts/price/50/100');
+  it('/price/:price_min/:price_max should return concerts by price', async () => {
+    const res = await request(server).get('/api/concerts/price/40/50');
     expect(res.status).to.equal(200);
     expect(res.body).to.be.an('array');
     expect(res.body.length).to.equal(1);
@@ -56,6 +66,23 @@ describe('GET /concerts', () => {
     expect(res.status).to.equal(200);
     expect(res.body).to.be.an('array');
     expect(res.body.length).to.equal(1);
-  };
+  });
+
+  it('/:id should return concert by id', async () => {
+    const res = await request(server).get('/api/concerts/5d9f1140f10a81216cfd4408');
+    expect(res.status).to.equal(200);
+    expect(res.body).to.be.an('object');
+    expect(res.body).to.not.be.null;
+  });
+
+  cases = [{id: '5d9f1140f10a81216cfd4408', freeSeats: 48}, {id: '5d9f1159f81ce8d1ef2bee48', freeSeats: 50}];
+  cases.forEach(({id, freeSeats}) => {
+    it('/:id should return concert with number of freeSeats', async () => {
+      const res = await request(server).get('/api/concerts/' + id);
+      expect(res.status).to.equal(200);
+      expect(res.body.freeSeats).to.be.equal(freeSeats);
+      expect(res.body).to.not.be.null;
+    });
+  });
 
 });
