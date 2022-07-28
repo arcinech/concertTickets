@@ -3,12 +3,13 @@ const Seat = require('../models/seat.model');
 
 exports.getAll = async (req, res) => { 
   try { 
-    const concerts = await Concert.find();
+    let concerts = await Concert.find();
     const seats = await Seat.find();
-    res.send(concerts.map(concert => {
-      concert.freeSeats = 50 - seats.filter(seat => seat.concert === concert._id.toString()).length;
-    })
-    );
+    concerts = concerts.map(concert => {
+      concert._doc.freeSeats = 50 - seats.filter(seat => seat.concert === concert._id.toString()).length;
+      return concert;
+    });
+    res.send(concerts)
   } catch (err) {
     res.status(500).send(err);
   }
