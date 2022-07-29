@@ -13,10 +13,10 @@ const request = chai.request;
 describe('GET /concerts', () => {
 
   beforeEach(async () => {
-    const testSeatsOne = new Seat({_id: '62e260ecf22805eafedf72ba', day: 1, seat: 1, client: 'test', email: 'test@test.test', concert: '5d9f1140f10a81216cfd4408'});
+    const testSeatsOne = new Seat({_id: '62e260ecf22805eafedf72ba', day: 1, seat: 1, client: 'test', email: 'test@test.test', concertId: '5d9f1140f10a81216cfd4408'});
     await testSeatsOne.save();
 
-    const testSeatTwo = new Seat({_id: '62e267f87e2b0bc1072ee9ba', day: 1, seat: 3, client: 'test', email: 'test@test.test', concert: '5d9f1140f10a81216cfd4408'});
+    const testSeatTwo = new Seat({_id: '62e267f87e2b0bc1072ee9ba', day: 1, seat: 3, client: 'test', email: 'test@test.test', concertId: '5d9f1140f10a81216cfd4408'});
     await testSeatTwo.save();
 
     const testConOne = new Concert({_id: '5d9f1140f10a81216cfd4408', performer: 'John Doe', genre: 'Rock', price: '50', day: '1', image: 'img/uploads/1fsd324fsdg.jpg'});
@@ -33,11 +33,10 @@ describe('GET /concerts', () => {
 
   it('/ should return all concerts', async () => {
     const res = await request(server).get('/api/concerts');
+    console.log(res.body);
     expect(res.status).to.equal(200);
     expect(res.body).to.be.an('array');
     expect(res.body.length).to.equal(2);
-    console.log(res.body);
-    expect(res.body[0].freeSeats).to.equal(48);
   });
 
   it('/performer/performer:id should return concerts by performer', async () => {
@@ -75,14 +74,15 @@ describe('GET /concerts', () => {
     expect(res.body).to.not.be.null;
   });
 
-  cases = [{id: '5d9f1140f10a81216cfd4408', freeSeats: 48}, {id: '5d9f1159f81ce8d1ef2bee48', freeSeats: 50}];
-  cases.forEach(({id, freeSeats}) => {
-    it('/:id should return concert with number of freeSeats', async () => {
+  it('/:id should return concert with number of freeSeats', async () => { 
+    cases = [{id: '5d9f1140f10a81216cfd4408', freeSeats: 48}, {id: '5d9f1159f81ce8d1ef2bee48', freeSeats: 50}];
+    
+    for(let {id, freeSeats} of cases) {
       const res = await request(server).get('/api/concerts/' + id);
       expect(res.status).to.equal(200);
       expect(res.body.freeSeats).to.be.equal(freeSeats);
       expect(res.body).to.not.be.null;
-    });
+    };
   });
 
 });
