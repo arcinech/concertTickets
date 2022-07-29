@@ -1,12 +1,13 @@
 const Concert = require('../models/concert.model');
 const Seat = require('../models/seat.model');
+const Workshop = require('../models/workshop.model');
 
 exports.getAll = async (req, res) => { 
   try { 
-    let concerts = await Concert.find();
+    let concerts = await Concert.find().populate('workshops');
     const seats = await Seat.find();
     concerts = concerts.map(concert => {
-      concert._doc.freeSeats = 50 - seats.filter(seat => seat.concert === concert._id.toString()).length;
+      concert._doc.freeSeats = 50 - seats.filter(seat => seat.concertId.toString() === concert._id.toString()).length;
       return concert;
     });
     res.send(concerts)
@@ -36,7 +37,7 @@ exports.postConcert = async (req, res) => {
 exports.getById = async (req, res) => { 
   try {
     const concert = await Concert.findById(req.params.id);
-    const seats = await Seat.find({concert: req.params.id});
+    const seats = await Seat.find({concertId: req.params.id});
     if(concert) {
       const freeSeats = 50 - seats.length;
       concert._doc.freeSeats = freeSeats;
@@ -59,6 +60,7 @@ exports.putById = async (req, res) => {
       exist.price = price;
       exist.day = day;
       exist.image = image;
+      exist.workshops = await Workshop.find({concertId: req.params.id});
       await exist.save();
       res.json({ message: 'OK' });
     } else res.status(404).json({ message: 'Not found...' });
