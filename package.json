@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  },
   "scripts": {
     "start": "node server.js",
     "start:dev": "nodemon server.js",
@@ -11,12 +14,12 @@
     "build": "cd client && yarn install && yarn build"
   },
   "dependencies": {
-    "chai": "4.2.0",
+    "chai": "^4.3.6",
     "chai-http": "^4.3.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
-    "mocha": "6.2.1",
+    "mocha": "^10.0.0",
     "mongodb": "^4.8.0",
     "mongoose": "^6.4.6",
     "onchange": "6.1.0",
