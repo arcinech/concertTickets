@@ -2,17 +2,21 @@ const Concert = require('../models/concert.model');
 const Seat = require('../models/seat.model');
 const Workshop = require('../models/workshop.model');
 
+const concertsTickets = (concerts, seats) => {
+  return concerts?.map(concert => {
+    concert._doc.tickets =
+      50 -
+      seats?.filter(seat => seat.concertId?.toString() === concert._id?.toString())
+        .length;
+    return concert;
+  });
+};
+
 exports.getAll = async (req, res) => {
   try {
     let concerts = await Concert.find();
     const seats = await Seat.find();
-    concerts = concerts?.map(concert => {
-      concert._doc.freeSeats =
-        50 -
-        seats?.filter(seat => seat.concertId?.toString() === concert._id?.toString())
-          .length;
-      return concert;
-    });
+    concerts = concertsTickets(concerts, seats);
     res.send(concerts);
   } catch (err) {
     res.status(500).send(err);
@@ -48,8 +52,8 @@ exports.getById = async (req, res) => {
     const concert = await Concert.findById(req.params.id);
     const seats = await Seat.find({ concertId: req.params.id });
     if (concert) {
-      const freeSeats = 50 - seats.length;
-      concert._doc.freeSeats = freeSeats;
+      const tickets = 50 - seats.length;
+      concert._doc.tickets = tickets;
       res.send(concert);
     } else res.status(404).json({ message: 'Not found' });
   } catch (err) {
@@ -93,9 +97,9 @@ exports.deleteById = async (req, res) => {
 exports.getByPerformer = async (req, res) => {
   try {
     const concerts = await Concert.find({ performer: req.params.performer });
-
+    const seats = await Seat.find();
     if (concerts) {
-      res.send(concerts);
+      res.send(concertsTickets(concerts, seats));
     } else {
       res.status(404).json({ message: 'Not found' });
     }
@@ -107,9 +111,9 @@ exports.getByPerformer = async (req, res) => {
 exports.getByGenre = async (req, res) => {
   try {
     const concerts = await Concert.find({ genre: req.params.genre });
-
+    const seats = await Seat.find();
     if (concerts) {
-      res.send(concerts);
+      res.send(concertsTickets(concerts, seats));
     } else {
       res.status(404).json({ message: 'Not found' });
     }
@@ -123,9 +127,10 @@ exports.getByPrice = async (req, res) => {
     const concerts = await Concert.find({
       price: { $gte: req.params.price_min, $lte: req.params.price_max },
     });
+    const seats = await Seat.find();
 
     if (concerts) {
-      res.send(concerts);
+      res.send(concertsTickets(concerts, seats));
     } else {
       res.status(404).json({ message: 'Not found' });
     }
@@ -137,9 +142,10 @@ exports.getByPrice = async (req, res) => {
 exports.getByDay = async (req, res) => {
   try {
     const concerts = await Concert.find({ day: req.params.day });
+    const seats = await Seat.find();
 
     if (concerts) {
-      res.send(concerts);
+      res.send(concertsTickets(concerts, seats));
     } else {
       res.status(404).json({ message: 'Not found' });
     }

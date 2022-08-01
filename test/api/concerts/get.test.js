@@ -101,14 +101,14 @@ describe('GET /api/concerts', () => {
 
   it('/:id should return concert with number of freeSeats', async () => {
     cases = [
-      { id: '5d9f1140f10a81216cfd4408', freeSeats: 48 },
-      { id: '5d9f1159f81ce8d1ef2bee48', freeSeats: 50 },
+      { id: '5d9f1140f10a81216cfd4408', tickets: 48 },
+      { id: '5d9f1159f81ce8d1ef2bee48', tickets: 50 },
     ];
 
-    for (let { id, freeSeats } of cases) {
+    for (let { id, tickets } of cases) {
       const res = await request(server).get('/api/concerts/' + id);
       expect(res.status).to.equal(200);
-      expect(res.body.freeSeats).to.be.equal(freeSeats);
+      expect(res.body.tickets).to.be.equal(tickets);
       expect(res.body).to.not.be.null;
     }
   });
