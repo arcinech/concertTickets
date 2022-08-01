@@ -8,7 +8,7 @@ chai.use(chaiHttp);
 const expect = chai.expect;
 const request = chai.request;
 
-describe('DELETE /api/testimonials', () => {
+describe('PUT /api/testimonials', () => {
   before(async () => {
     const testTestiOne = new Testimonial({
       _id: '62e260ecf22805eafedf72ba',
