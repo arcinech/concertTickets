@@ -42,7 +42,7 @@ exports.putById = async (req, res) => {
   const { day, seat, client, email } = req.body;
 
   try {
-    const exist = await Seat.findOne({ day, seat });
+    const exist = await Seat.findById(req.params.id);
 
     if (exist) {
       exist.day = day ?? exist.day;
