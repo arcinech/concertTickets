@@ -14,7 +14,7 @@ const concertsTickets = (concerts, seats) => {
 
 exports.getAll = async (req, res) => {
   try {
-    let concerts = await Concert.find();
+    let concerts = await Concert.find().populate('workshops');
     const seats = await Seat.find();
     concerts = concertsTickets(concerts, seats);
     res.send(concerts);
@@ -49,7 +49,7 @@ exports.postConcert = async (req, res) => {
 
 exports.getById = async (req, res) => {
   try {
-    const concert = await Concert.findById(req.params.id);
+    const concert = await Concert.findById(req.params.id).populate('workshops');
     const seats = await Seat.find({ concertId: req.params.id });
     if (concert) {
       const tickets = 50 - seats.length;
@@ -96,7 +96,9 @@ exports.deleteById = async (req, res) => {
 
 exports.getByPerformer = async (req, res) => {
   try {
-    const concerts = await Concert.find({ performer: req.params.performer });
+    const concerts = await Concert.find({ performer: req.params.performer }).populate(
+      'workshops'
+    );
     const seats = await Seat.find();
     if (concerts) {
       res.send(concertsTickets(concerts, seats));
@@ -110,7 +112,9 @@ exports.getByPerformer = async (req, res) => {
 
 exports.getByGenre = async (req, res) => {
   try {
-    const concerts = await Concert.find({ genre: req.params.genre });
+    const concerts = await Concert.find({ genre: req.params.genre }).populate(
+      'workshops'
+    );
     const seats = await Seat.find();
     if (concerts) {
       res.send(concertsTickets(concerts, seats));
@@ -126,9 +130,8 @@ exports.getByPrice = async (req, res) => {
   try {
     const concerts = await Concert.find({
       price: { $gte: req.params.price_min, $lte: req.params.price_max },
-    });
+    }).populate('workshops');
     const seats = await Seat.find();
-
     if (concerts) {
       res.send(concertsTickets(concerts, seats));
     } else {
@@ -141,9 +144,8 @@ exports.getByPrice = async (req, res) => {
 
 exports.getByDay = async (req, res) => {
   try {
-    const concerts = await Concert.find({ day: req.params.day });
+    const concerts = await Concert.find({ day: req.params.day }).populate('workshops');
     const seats = await Seat.find();
-
     if (concerts) {
       res.send(concertsTickets(concerts, seats));
     } else {

@@ -1,6 +1,7 @@
 const expect = require('chai').expect;
 const mongoose = require('mongoose');
 const Concert = require('../concert.model');
+const Workshop = require('../workshop.model');
 
 describe('Concert CRUD', () => {
   before(async () => {
@@ -17,26 +18,45 @@ describe('Concert CRUD', () => {
   describe('Reading data', () => {
     beforeEach(async () => {
       const testConcertOne = new Concert({
+        _id: '62e260ecf22805eafedf72ba',
         performer: 'Performer #1',
         genre: 'Genre #1',
         price: 1,
         day: 1,
         image: 'Image #1',
+        workshops: ['62e80c891a8917f81518964a', '62e80cb29bae60568c2994a4'],
       });
       await testConcertOne.save();
 
       const testConcertTwo = new Concert({
+        id: '62e267f87e2b0bc1072ee9ba',
         performer: 'Performer #2',
         genre: 'Genre #2',
         price: 2,
         day: 2,
         image: 'Image #2',
+        workshops: [],
       });
       await testConcertTwo.save();
+
+      const testWorkshopOne = new Workshop({
+        _id: '62e80c891a8917f81518964a',
+        name: 'Workshop #1',
+        concertId: '62e260ecf22805eafedf72ba',
+      });
+      await testWorkshopOne.save();
+
+      const testWorkshopTwo = new Workshop({
+        _id: '62e80cb29bae60568c2994a4',
+        name: 'Workshop #2',
+        concertId: '62e260ecf22805eafedf72ba',
+      });
+      await testWorkshopTwo.save();
     });
 
     afterEach(async () => {
       await Concert.deleteMany();
+      await Workshop.deleteMany();
     });
 
     it('should return all the data with "find" method', async () => {
@@ -49,6 +69,12 @@ describe('Concert CRUD', () => {
       const concert = await Concert.findOne({ performer: 'Performer #1' });
       expect(concert).to.be.an('object');
       expect(concert.performer).to.equal('Performer #1');
+    });
+
+    it('should return a proper document with populated workshop', async () => {
+      const concerts = await Concert.find().populate('workshops', 'name -_id');
+      expect(concerts[0].workshops).to.be.an('array');
+      expect(concerts[0].workshops).to.have.lengthOf(2);
     });
   });
 
@@ -67,7 +93,7 @@ describe('Concert CRUD', () => {
       });
       await concert.save();
       expect(concert).to.be.an('object');
-      expect(concert.performer).to.equal('Performer #3');
+      expect(concert.isNew).to.be.false;
     });
   });
 
