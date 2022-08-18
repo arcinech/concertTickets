@@ -1,6 +1,7 @@
 const Concert = require('../models/concert.model');
 const Seat = require('../models/seat.model');
 const Workshop = require('../models/workshop.model');
+const sanitize = require('mongo-sanitize');
 
 const concertsTickets = (concerts, seats) => {
   return concerts?.map(concert => {
@@ -25,16 +26,20 @@ exports.getAll = async (req, res) => {
 
 exports.postConcert = async (req, res) => {
   const { performer, genre, price, day, image } = req.body;
+  const cleanPerfomer = sanitize(performer);
+  const cleanGenre = sanitize(genre);
+  const cleanPrice = sanitize(price);
+  const cleanDay = sanitize(day);
 
   try {
     const exist = await Concert.findOne({ performer, genre, price, day, image });
 
     if (performer && genre && price && day && image && !exist) {
       const newConcert = new Concert({
-        performer: performer,
-        genre: genre,
-        price: price,
-        day: day,
+        performer: cleanPerfomer,
+        genre: cleanGenre,
+        price: cleanGenre,
+        day: cleanDay,
         image: image,
       });
       await newConcert.save();
