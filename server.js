@@ -4,6 +4,7 @@ const cors = require('cors');
 const path = require('path');
 const mongoose = require('mongoose');
 const app = express();
+const helmet = require('helmet');
 
 const seatsRouts = require('./routes/seats.routes');
 const testimionalsRouts = require('./routes/testimionals.routes');
@@ -28,6 +29,7 @@ const io = socket(serv, {
   },
 });
 
+app.use(helmet());
 app.use((req, res, next) => {
   req.io = io;
   next();
