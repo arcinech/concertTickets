@@ -1,4 +1,5 @@
 const Seat = require('../models/seat.model');
+const sanitize = require('mongo-sanitize');
 
 exports.getAllSeats = async (req, res) => {
   try {
@@ -10,12 +11,21 @@ exports.getAllSeats = async (req, res) => {
 
 exports.postSeat = async (req, res) => {
   const { day, seat, client, email } = req.body;
+  const cleanDay = sanitize(day);
+  const cleanSeat = sanitize(seat);
+  const cleanClient = sanitize(client);
+  const cleanEmail = sanitize(email);
 
   try {
     const exist = await Seat.findOne({ day, seat });
 
     if (day && seat && client && email && !exist) {
-      const newOrder = new Seat({ day: day, seat: seat, client: client, email: email });
+      const newOrder = new Seat({
+        day: cleanDay,
+        seat: cleanSeat,
+        client: cleanClient,
+        email: cleanEmail,
+      });
       await newOrder.save();
       req.io.emit('seatsUpdated', await Seat.find().lean());
       res.json({ message: 'Ok' });
