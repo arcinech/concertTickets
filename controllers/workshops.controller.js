@@ -1,5 +1,6 @@
 const Workshop = require('../models/workshop.model');
 const sanitize = require('mongo-sanitize');
+const escapeHTML = require('../utils/escapeHTML');
 
 exports.getAll = async (req, res) => {
   try {
@@ -35,7 +36,10 @@ exports.postWorkshop = async (req, res) => {
     });
 
     if (name && concertId && !exist) {
-      const newWorkshop = new Workshop({ name: cleanName, concertId: cleanConcertId });
+      const newWorkshop = new Workshop({
+        name: escapeHTML(cleanName),
+        concertId: escapeHTML(cleanConcertId),
+      });
       await newWorkshop.save();
       res.json({ message: 'OK' });
     } else if (exist) {

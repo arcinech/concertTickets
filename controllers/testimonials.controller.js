@@ -1,5 +1,6 @@
 const Testimonial = require('../models/testimonial.model');
 const sanitize = require('mongo-sanitize');
+const escapeHTML = require('../utils/escapeHTML');
 
 exports.getAll = async (req, res) => {
   try {
@@ -17,7 +18,10 @@ exports.postTestimonial = async (req, res) => {
   try {
     const exist = await Testimonial.findOne({ author, text });
     if (author && text && !exist) {
-      const newTestimonial = new Testimonial({ author: cleanAuthor, text: cleanText });
+      const newTestimonial = new Testimonial({
+        author: escapeHTML(cleanAuthor),
+        text: escapeHTML(cleanText),
+      });
       await newTestimonial.save();
       res.json({ message: 'OK' });
     } else if (exist) {
@@ -56,8 +60,8 @@ exports.putById = async (req, res) => {
   try {
     const exist = await Testimonial.findById(req.params.id);
     if (exist) {
-      exist.author = author ?? exist.author;
-      exist.text = text ?? exist.text;
+      exist.author = escapeHTML(author) ?? exist.author;
+      exist.text = escapeHTML(text) ?? exist.text;
       await exist.save();
       res.json({ message: 'OK' });
     } else res.status(404).json({ message: 'Not found...' });
