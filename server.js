@@ -4,6 +4,7 @@ const cors = require('cors');
 const path = require('path');
 const mongoose = require('mongoose');
 const app = express();
+const helmet = require('helmet');
 
 const seatsRouts = require('./routes/seats.routes');
 const testimionalsRouts = require('./routes/testimionals.routes');
@@ -14,9 +15,13 @@ const Seat = require('./models/seat.model');
 
 const NODE_ENV = process.env.NODE_ENV;
 
-if (NODE_ENV === 'production') dbUri = 'process.env.MONGODB_URI';
-else if (NODE_ENV === 'test') dbUri = 'mongodb://localhost:27017/NewWaveDBtest';
-else dbUri = 'mongodb://localhost:27017/NewWaveDB';
+if (NODE_ENV === 'production') {
+  dbUri = process.env.MONGODB_URI;
+} else if (NODE_ENV === 'test') {
+  dbUri = 'mongodb://localhost:27017/NewWaveDBtest';
+} else {
+  dbUri = 'mongodb://localhost:27017/NewWaveDB';
+}
 
 // Port for listening of the server
 const serv = app.listen(process.env.PORT || 8000);
@@ -28,6 +33,7 @@ const io = socket(serv, {
   },
 });
 
+app.use(helmet());
 app.use((req, res, next) => {
   req.io = io;
   next();

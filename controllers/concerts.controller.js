@@ -1,6 +1,7 @@
 const Concert = require('../models/concert.model');
 const Seat = require('../models/seat.model');
 const Workshop = require('../models/workshop.model');
+const sanitize = require('mongo-sanitize');
 
 const concertsTickets = (concerts, seats) => {
   return concerts?.map(concert => {
@@ -25,14 +26,22 @@ exports.getAll = async (req, res) => {
 
 exports.postConcert = async (req, res) => {
   const { performer, genre, price, day, image } = req.body;
+  const cleanPerformer = sanitize(performer);
+  const cleanGenre = sanitize(genre);
 
   try {
-    const exist = await Concert.findOne({ performer, genre, price, day, image });
+    const exist = await Concert.findOne({
+      performer: cleanPerformer,
+      genre: cleanGenre,
+      price,
+      day,
+      image,
+    });
 
     if (performer && genre && price && day && image && !exist) {
       const newConcert = new Concert({
-        performer: performer,
-        genre: genre,
+        performer: escapeHTML(cleanPerformer),
+        genre: escapeHTML(cleanGenre),
         price: price,
         day: day,
         image: image,
@@ -64,15 +73,17 @@ exports.getById = async (req, res) => {
 exports.putById = async (req, res) => {
   const { performer, genre, price, day, image } = req.body;
   try {
-    const conc = await Concert.findById(req.params.id);
+    const conc = await Concert.findById(sanitize(req.params.id));
     if (conc) {
-      conc.performer = performer ?? conc.performer;
-      conc.genre = genre ?? conc.genre;
+      const workshops = await Workshop.find({ concertId: sanitize(req.params.id) });
+
+      conc.performer = escapeHTML(performer) ?? conc.performer;
+      conc.genre = escapeHTML(genre) ?? conc.genre;
       conc.price = price ?? conc.price;
       conc.day = day ?? conc.day;
       conc.image = image ?? conc.image;
-      const workshops = await Workshop.find({ concertId: req.params.id });
       conc.workshops = workshops.map(a => a._id);
+
       await conc.save();
       res.json(conc);
     } else res.status(404).json({ message: 'Not found...' });
